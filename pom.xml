@@ -1,32 +1,34 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="https://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.restlet.dev</groupId>
-        <artifactId>org.restlet.parent</artifactId>
-        <version>2.4-SNAPSHOT</version>
-    </parent>
-
-    <artifactId>org.restlet.ext.servlet</artifactId>
+    <groupId>jp.livlog</groupId>
+    <artifactId>org.restlet.ext.servlet.jakarta</artifactId>
+    <version>2.4.3-SNAPSHOT</version>
     <name>Restlet Extension - Servlet</name>
     <description>Integration with Servlet API.</description>
-
+    <repositories>
+        <repository>
+            <id>maven-restlet</id>
+            <name>Public online Restlet repository</name>
+            <url>https://maven.restlet.talend.com</url>
+        </repository>
+    </repositories>
+    <properties>
+        <java.version>17</java.version>
+        <restlet.version>2.4.3</restlet.version>
+    </properties>
     <dependencies>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.restlet.dev</groupId>
-            <artifactId>org.restlet.ext.osgi</artifactId>
-            <version>2.4-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.restlet.dev</groupId>
+            <groupId>org.restlet.jee</groupId>
             <artifactId>org.restlet</artifactId>
-            <version>2.4-SNAPSHOT</version>
+            <version>${restlet.version}</version>
         </dependency>
     </dependencies>
 </project>

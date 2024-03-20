@@ -1,32 +1,28 @@
 /**
  * Copyright 2005-2020 Talend
- * 
+ *
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or or EPL 1.0 (the "Licenses"). You can
  * select the license that you prefer but you may not use this file except in
  * compliance with one of these Licenses.
- * 
+ *
  * You can obtain a copy of the Apache 2.0 license at
  * http://www.opensource.org/licenses/apache-2.0
- * 
+ *
  * You can obtain a copy of the EPL 1.0 license at
  * http://www.opensource.org/licenses/eclipse-1.0
- * 
+ *
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
- * 
+ *
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * https://restlet.talend.com/
- * 
+ *
  * Restlet is a registered trademark of Talend S.A.
  */
 
 package org.restlet.ext.servlet;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.Context;
 import org.restlet.Restlet;
@@ -39,6 +35,10 @@ import org.restlet.ext.servlet.internal.ServletLogger;
 import org.restlet.ext.servlet.internal.ServletServerAdapter;
 import org.restlet.routing.Router;
 
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 /**
  * HTTP adapter from Servlet calls to Restlet calls. This class can be used in
  * any Servlet, just create a new instance and override the service() method in
@@ -49,32 +49,32 @@ import org.restlet.routing.Router;
  * <br>
  * This class is especially useful when directly integrating Restlets with
  * Spring managed Web applications. Here is a simple usage example:
- * 
+ *
  * <pre>
  * public class TestServlet extends HttpServlet {
  *     private ServletAdapter adapter;
- * 
+ *
  *     public void init() throws ServletException {
  *         super.init();
  *         this.adapter = new ServletAdapter(getServletContext());
- * 
+ *
  *         Restlet trace = new Restlet(this.adapter.getContext()) {
  *             public void handle(Request req, Response res) {
  *                 getLogger().info(&quot;Hello World&quot;);
  *                 res.setEntity(&quot;Hello World!&quot;, MediaType.TEXT_PLAIN);
  *             }
  *         };
- * 
+ *
  *         this.adapter.setNext(trace);
  *     }
- * 
+ *
  *     protected void service(HttpServletRequest req, HttpServletResponse res)
  *             throws ServletException, IOException {
  *         this.adapter.service(req, res);
  *     }
  * }
  * </pre>
- * 
+ *
  * @author Jerome Louvel
  */
 public class ServletAdapter extends ServletServerAdapter {
@@ -85,23 +85,26 @@ public class ServletAdapter extends ServletServerAdapter {
     /**
      * Constructor. Remember to manually set the "target" property before
      * invoking the service() method.
-     * 
+     *
      * @param context
      *            The Servlet context.
      */
-    public ServletAdapter(ServletContext context) {
+    public ServletAdapter(final ServletContext context) {
+
         this(context, null);
     }
 
+
     /**
      * Constructor.
-     * 
+     *
      * @param context
      *            The Servlet context.
      * @param next
      *            The next Restlet.
      */
-    public ServletAdapter(ServletContext context, Restlet next) {
+    public ServletAdapter(final ServletContext context, final Restlet next) {
+
         // [ifndef gae] instruction
         super(new Context(new ServletLogger(context)));
         // [ifdef gae] instruction uncomment
@@ -109,14 +112,16 @@ public class ServletAdapter extends ServletServerAdapter {
         this.next = next;
     }
 
+
     /**
      * Returns the base reference of new Restlet requests.
-     * 
+     *
      * @param request
      *            The Servlet request.
      * @return The base reference of new Restlet requests.
      */
-    public Reference getBaseRef(HttpServletRequest request) {
+    public Reference getBaseRef(final HttpServletRequest request) {
+
         Reference result = null;
         final String basePath = request.getContextPath()
                 + request.getServletPath();
@@ -131,87 +136,93 @@ public class ServletAdapter extends ServletServerAdapter {
             } else {
                 result = new Reference(baseUri);
             }
-        } else {
-            if (pathStart != -1) {
-                final int baseIndex = baseUri.indexOf(basePath, pathStart);
-                if (baseIndex != -1) {
-                    result = new Reference(baseUri.substring(0, baseIndex
-                            + basePath.length()));
-                }
+        } else if (pathStart != -1) {
+            final int baseIndex = baseUri.indexOf(basePath, pathStart);
+            if (baseIndex != -1) {
+                result = new Reference(baseUri.substring(0, baseIndex
+                        + basePath.length()));
             }
         }
 
         return result;
     }
 
+
     /**
      * Returns the next Restlet.
-     * 
+     *
      * @return The next Restlet.
      */
     public Restlet getNext() {
+
         return this.next;
     }
+
 
     /**
      * Returns the root reference of new Restlet requests. By default it returns
      * the result of getBaseRef().
-     * 
+     *
      * @param request
      *            The Servlet request.
      * @return The root reference of new Restlet requests.
      */
-    public Reference getRootRef(HttpServletRequest request) {
-        return getBaseRef(request);
+    public Reference getRootRef(final HttpServletRequest request) {
+
+        return this.getBaseRef(request);
     }
+
 
     /**
      * Services a HTTP Servlet request as a Restlet request handled by the
      * "target" Restlet.
-     * 
+     *
      * @param request
      *            The HTTP Servlet request.
      * @param response
      *            The HTTP Servlet response.
      */
-    public void service(HttpServletRequest request, HttpServletResponse response) {
-        if (getNext() != null) {
+    public void service(final HttpServletRequest request, final HttpServletResponse response) {
+
+        if (this.getNext() != null) {
             try {
                 // Set the current context
-                Context.setCurrent(getContext());
+                Context.setCurrent(this.getContext());
 
                 // Convert the Servlet call to a Restlet call
-                ServletCall servletCall = new ServletCall(
+                final ServletCall servletCall = new ServletCall(
                         request.getLocalAddr(), request.getLocalPort(),
                         request, response);
-                HttpRequest httpRequest = toRequest(servletCall);
-                HttpResponse httpResponse = new HttpResponse(servletCall,
+                final HttpRequest httpRequest = this.toRequest(servletCall);
+                final HttpResponse httpResponse = new HttpResponse(servletCall,
                         httpRequest);
 
                 // Adjust the relative reference
-                httpRequest.getResourceRef().setBaseRef(getBaseRef(request));
+                httpRequest.getResourceRef().setBaseRef(this.getBaseRef(request));
 
                 // Adjust the root reference
-                httpRequest.setRootRef(getRootRef(request));
+                httpRequest.setRootRef(this.getRootRef(request));
 
                 // Handle the request and commit the response
-                getNext().handle(httpRequest, httpResponse);
-                commit(httpResponse);
+                this.getNext().handle(httpRequest, httpResponse);
+                this.commit(httpResponse);
             } finally {
                 Engine.clearThreadLocalVariables();
             }
         } else {
-            getLogger().warning("Unable to find the Restlet target");
+            this.getLogger().warning("Unable to find the Restlet target");
         }
     }
 
+
     /**
      * Sets the next Restlet.
-     * 
+     *
      * @param next
      *            The next Restlet.
      */
-    public void setNext(Restlet next) {
+    public void setNext(final Restlet next) {
+
         this.next = next;
     }
 
