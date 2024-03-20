@@ -7,6 +7,17 @@
     <version>2.4.3-SNAPSHOT</version>
     <name>Restlet Extension - Servlet</name>
     <description>Integration with Servlet API.</description>
+    <scm>
+        <url>https://github.com/livlog-llc/restlet-servlet-jakarta</url>
+        <connection>scm:git:git@github.com:livlog-llc/restlet-servlet-jakarta.git</connection>
+        <tag>HEAD</tag>
+    </scm>
+    <distributionManagement>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </distributionManagement>
     <repositories>
         <repository>
             <id>maven-restlet</id>
@@ -31,4 +42,40 @@
             <version>${restlet.version}</version>
         </dependency>
     </dependencies>
+    <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <outputDirectory>target/classes</outputDirectory>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <!-- リリースバージョンの指定 -->
+                    <tagNameFormat>v@{project.version}</tagNameFormat>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <releaseProfiles>release</releaseProfiles>
+                    <goals>deploy</goals>
+                    <!-- SCMコメントの設定 -->
+                    <scmCommentPrefix>[Release]</scmCommentPrefix>
+                    <!-- スナップショットバージョンの自動インクリメント -->
+                    <preparationGoals>clean verify</preparationGoals>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
